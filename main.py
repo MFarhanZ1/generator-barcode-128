@@ -1,25 +1,37 @@
-import code128
+from src import *
+import os
+import time
 
-print("""
+def banner_and_process():
+    os.system("cls")
+    
+    print("""
 
     ██   ██  █████  ███    ██ ███████     ██████   █████  ██████   ██████  ██████  ██████  ███████ 
     ██   ██ ██   ██ ████   ██    ███      ██   ██ ██   ██ ██   ██ ██      ██    ██ ██   ██ ██      
     ███████ ███████ ██ ██  ██   ███       ██████  ███████ ██████  ██      ██    ██ ██   ██ █████   
     ██   ██ ██   ██ ██  ██ ██  ███        ██   ██ ██   ██ ██   ██ ██      ██    ██ ██   ██ ██        Developed by @mfarhanz1 (v1.27)
     ██   ██ ██   ██ ██   ████ ███████     ██████  ██   ██ ██   ██  ██████  ██████  ██████  ███████   Barcode Generator System
-                                                                                               
-""")    
 
-while(True):
+    Choose what you want to do!
+    1. Manual Convert
+    2. Automatic Convert From MYSQL-DBS                                                                                        
+    3. Exit
+    """)    
 
-    text_to_code = input("[Input] Text To Barcode : ")
-    try:        
-        code128.image(text_to_code).save(f"{text_to_code}.jpg")
-        print("\n[+] Yeay, barcode has been succesfully generated!")
-    except:
-        print("\n[+] Oops, barcode has been failed generated!")
+    choosen_menu = int(input("    >> "))
 
-    use_this_tool_again = input("\n[+] Use This Tools Again? (Type : 'ga' if you want to close this or press enter if you want to continue!)")
-    if use_this_tool_again.lower() in ["no", "n", "gak", "ga", "g", "tidak", "tdk", "gk"]:
-        print("\n[+] Thanks for using hanz barcode!")
-        break
+    os.system("cls")
+
+    if choosen_menu == 1:
+        if start_manual_convert():
+            banner_and_process()
+
+    elif choosen_menu == 2:
+        if start_auto_convert():
+            banner_and_process()
+    else:
+        quit()
+
+if __name__ == "__main__":
+    banner_and_process()
