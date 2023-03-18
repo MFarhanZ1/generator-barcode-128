@@ -6,7 +6,7 @@ def start_manual_convert():
 
         text_to_code = input("[Input] Text To Barcode : ")
         try:        
-            backend.text_to_barcode128.convert(text_to_code, additional_path="barcode128_result/manual/")
+            backend.text_to_barcode128.convert(text_to_code, image_file_name=text_to_code,additional_path="barcode128_result/manual/")
             print("\n[+] Yeay, barcode has been succesfully generated!")
         except:
             print("\n[+] Oops, barcode has been failed generated!")

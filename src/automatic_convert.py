@@ -41,6 +41,7 @@ def start_auto_convert():
 
         # Mengambil value kode_barang pada table mysql
         text_kode_barang = row[0]
+        text_nama_barang = row[1]
         
         # Mengecek apakah kode barang berupa string atau tidak
         try:
@@ -48,7 +49,7 @@ def start_auto_convert():
             continue
         except ValueError:
             # Konversi ke code barcode 128
-            backend.text_to_barcode128.convert(text_kode_barang, additional_path="barcode128_result/automate/")
+            backend.text_to_barcode128.convert(text_kode_barang, image_file_name=f"{text_nama_barang} [{text_kode_barang}]", additional_path="barcode128_result/automate/")
 
     # Menutup koneksi dan cursor
     cursor.close()
