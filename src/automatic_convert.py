@@ -1,5 +1,6 @@
 import mysql.connector
 import backend.text_to_barcode128
+import backend.insert_to_excel
 import os
 
 def start_auto_convert():
@@ -8,7 +9,6 @@ def start_auto_convert():
 
     get_dbs_name = input("[Input] Masukin Nama Databasenya : ")
     get_table_name = input("\n[Input] Masukin Nama Tabelnya : ")  
-    get_col_name = input("\n[Input] Masukin nama kolom yang mau lu ubah jadi barcode : ")  
 
     # Mengecek apakah nama database dan nama tabelnya benar
     try:
@@ -20,18 +20,21 @@ def start_auto_convert():
             password="",
             database=get_dbs_name
         )
+        
+        # mengambil semua nama kolom pada tabel terkait
+        colNameFetcherCursor = cnx.cursor()
+        query_fetcher_col_name = f"DESC {get_table_name}"
+        colNameFetcherCursor.execute(query_fetcher_col_name)
 
     except mysql.connector.errors.ProgrammingError:
         input("\nERROR 404 - Periksa kembali nama database/nama table anda! [teken 'Enter' buat mengisi ulang!]")
         start_auto_convert()
 
-    # mengambil semua nama kolom pada tabel terkait
-    colNameFetcherCursor = cnx.cursor()
-    query_fetcher_col_name = f"DESC {get_table_name}"
-    colNameFetcherCursor.execute(query_fetcher_col_name)
-    
     # mengubah dalam bentuk list colomn yang diambil
     column_names = [column[0] for column in colNameFetcherCursor.fetchall()]
+
+    # input nama kolom yang isinya mau diubah jadi kode barcode
+    get_col_name = input("\n[Input] Masukin nama kolom yang mau lu ubah jadi barcode : ")  
 
     # mencari indeks keberapa colomn terkait
     while(True):
@@ -44,6 +47,7 @@ def start_auto_convert():
 
     get_custom_nama_file = input("\n[Optional] (Tekan 'Enter' jika ingin skip ini) Masukan kustom nama kolom yang ingin dijadikan nama file : ")
 
+    # jika langsung di tekan enter, akan di skip custom nama file
     if get_custom_nama_file != "":
         # mencari indeks keberapa colomn terkait
         while(True):
@@ -75,7 +79,7 @@ def start_auto_convert():
 
         if get_custom_nama_file != "":
             text_nama_barang = row[indexKeyChoosenNamaFile]    
-            nama_file = f"{text_nama_barang} [{text_kode_barang}]"
+            nama_file = f"{text_nama_barang.replace('/', 'per')} [{text_kode_barang}]"
         else:
             nama_file = text_kode_barang
 
@@ -84,12 +88,16 @@ def start_auto_convert():
             int(text_kode_barang)
             continue
         except ValueError:
+            
             # Konversi ke code barcode 128
             backend.text_to_barcode128.convert(text_kode_barang, image_file_name=nama_file, additional_path="barcode128_result/automate/")
+            
 
     # Menutup koneksi dan cursor
     cursor.close()
     cnx.close()
+    colNameFetcherCursor.close()
+    backend.insert_to_excel.inserting()
 
     input("[Finish] Yeay, teks berhasil diubah menjadi kode barcode128 secara masal!\n\n[Tekan 'Enter' untuk kembali ke-menu utama!]")
 
